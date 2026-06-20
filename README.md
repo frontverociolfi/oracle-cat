@@ -1,25 +1,29 @@
 # Oracle Cat
 
-Ask the oracle cat. Receive a tiny feline prophecy. Question your choices.
+Ask the oracle cat. Receive a tiny feline prophecy. Reconsider everything.
 
-Oracle Cat is a nonsense-but-polished Angular app where the user whispers a question, a rotating gallery of cats watches from the background, and a server-side OpenAI gateway returns a short mystical answer from the point of view of a very dramatic cat.
+Oracle Cat is a playful Angular SSR app where a user whispers a question, a rotating council of cats stares from the background, and a server-side OpenAI gateway answers as a mystical, judgmental feline.
 
 ## What It Does
 
-- Shows a cinematic hero screen with rotating cat photos from `public/cats`.
-- Lets the user type a question for the oracle.
-- Sends the question to an internal Express endpoint.
-- Keeps the OpenAI API key safely on the server.
-- Reveals the answer with a fade/blur transition.
-- Includes unit tests for the Angular UI, Angular service, Express route, OpenAI client, and oracle response parser.
+- Shows a cinematic hero screen with rotating cat images from `public/cats`.
+- Lets the user ask the oracle a question.
+- Supports English and Portuguese with a reusable language toggle.
+- Sends questions to an internal Express endpoint at `POST /api/oracle`.
+- Keeps the OpenAI API key on the server.
+- Reveals the oracle answer with a Tailwind-powered fade/blur transition.
+- Runs unit tests across the Angular UI, services, Express route, OpenAI client, and answer parser.
+- Builds as an Angular SSR app ready to run with Node.
 
 ## Tech Stack
 
 - Angular 21
 - Angular SSR with Express
-- Vitest for unit tests
+- Tailwind CSS 4
+- Vitest unit tests
 - OpenAI Responses API
 - `dotenv` for local environment variables
+- GitHub Actions for test/build artifacts
 
 ## Setup
 
@@ -35,21 +39,21 @@ Create your local environment file:
 cp .env.example .env
 ```
 
-Then add your OpenAI API key to `.env`:
+Then add your OpenAI config:
 
 ```env
 OPENAI_API_KEY=sk-your-key-here
 OPENAI_MODEL=gpt-4o
 ```
 
-The `.env` file is ignored by Git. The oracle keeps secrets. Mostly.
+The `.env` file is ignored by Git. The cat may be chaotic, but the key stays private.
 
 ## Run Locally
 
-Start the dev server:
+Start the Angular dev server:
 
 ```bash
-npm start
+npm run dev
 ```
 
 Open:
@@ -58,7 +62,7 @@ Open:
 http://localhost:4200/
 ```
 
-Ask something important, such as:
+Ask something urgent, such as:
 
 ```txt
 Should I refactor under the moon?
@@ -66,13 +70,13 @@ Should I refactor under the moon?
 
 ## Scripts
 
-Run tests:
+Run unit tests:
 
 ```bash
 npm test -- --watch=false
 ```
 
-Build:
+Build the production SSR bundle:
 
 ```bash
 npm run build
@@ -82,34 +86,86 @@ Run the built SSR server:
 
 ```bash
 npm run build
-npm run serve:ssr:oracle-cat
+npm start
 ```
 
-By default, the SSR server listens on `http://localhost:4000/`.
+By default, the built SSR server listens on:
+
+```txt
+http://localhost:4000/
+```
+
+## Deploy On Heroku
+
+This app is server-rendered and needs a Node runtime, so Heroku is a better fit than GitHub Pages.
+
+Create the app:
+
+```bash
+heroku login
+heroku create oracle-cat
+```
+
+Configure the OpenAI environment variables:
+
+```bash
+heroku config:set OPENAI_API_KEY=sk-your-key-here
+heroku config:set OPENAI_MODEL=gpt-4o
+```
+
+Deploy from Git:
+
+```bash
+git add .
+git commit -m "Prepare Heroku deploy"
+git push heroku main
+```
+
+Open the app:
+
+```bash
+heroku open
+```
+
+Heroku runs `npm run build` during deployment and starts the web dyno with the `Procfile`:
+
+```txt
+web: npm start
+```
 
 ## Project Shape
 
 ```txt
+public/
+  cats/
+    oracle-cat-01.png ... oracle-cat-16.png
+  oracle-cat.svg
+
 src/
   app/
     core/
       models/
+        language.models.ts
         oracle.models.ts
       services/
-        oracle.service.ts
+        language.service.ts
+        oracle-api.service.ts
     features/
       oracle/
         oracle.page.ts
         oracle.page.html
-        oracle.page.css
+    shared/
+      components/
+        language-toggle/
+          language-toggle.component.ts
+          language-toggle.component.html
     app.ts
     app.html
-    app.css
 
   server/
     openai/
       openai-client.ts
-      oracle.service.ts
+      oracle-answer.service.ts
     routes/
       oracle.routes.ts
 
@@ -118,23 +174,33 @@ src/
 
 ## How The Oracle Works
 
-The Angular feature component handles the screen state: question, loading, answer, errors, and reveal animation.
+The Angular page owns the screen state: question, loading, answer, errors, rotating cat background, and reveal animation.
 
-`OracleService` sends the question to:
+`OracleApiService` sends the question to:
 
 ```txt
 POST /api/oracle
 ```
 
-The Express route validates server configuration, creates an OpenAI client, and asks the backend oracle service for a prophecy.
+The Express route checks `OPENAI_API_KEY`, picks `OPENAI_MODEL`, creates an OpenAI client, and asks `OracleAnswerService` for the prophecy.
 
-The backend oracle service owns the prompt/persona:
+`OracleAnswerService` owns the oracle persona and extracts the final text from the OpenAI response. The frontend never sees the OpenAI API key.
+
+## Styling
+
+The app uses Tailwind classes directly in templates. Component CSS files were removed on purpose.
+
+The only global stylesheet is:
 
 ```txt
-Oracle Cat, Keeper of the Sacred Sunbeam and Knower of All Treat Locations.
+src/styles.css
 ```
 
-The frontend never sees the OpenAI API key.
+It imports Tailwind:
+
+```css
+@import 'tailwindcss';
+```
 
 ## Tests
 
@@ -142,7 +208,9 @@ The test suite covers:
 
 - Root app render
 - Oracle page behavior
-- Angular API service
+- Language toggle component
+- Language service
+- Angular oracle API service
 - OpenAI client request/error handling
 - Oracle answer parsing
 - Express oracle route behavior
@@ -156,23 +224,33 @@ npm test -- --watch=false
 Current expected result:
 
 ```txt
-6 test files, 18 tests passing
+8 test files, 25 tests passing
 ```
 
-## Notes
+## GitHub Actions
 
-This project uses an OpenAI API key through the server-side Responses API. It does not use browser-side API calls or old ChatGPT web session token packages.
+The workflow lives at:
 
-The cat photos live in:
+```txt
+.github/workflows/deploy.yml
+```
+
+It runs on pushes and pull requests to `main`, plus manual dispatch. The workflow installs dependencies, runs unit tests, builds the SSR app, and uploads `dist/oracle-cat` as the `oracle-cat-ssr` artifact.
+
+Because this app has an SSR backend and needs `OPENAI_API_KEY` at runtime, the workflow prepares a deploy artifact instead of deploying to GitHub Pages.
+
+## Cat Images
+
+The rotating background images live in:
 
 ```txt
 public/cats
 ```
 
-Add more images there and update the list in:
+If you add or rename images, update the `catImages` list in:
 
 ```txt
 src/app/features/oracle/oracle.page.ts
 ```
 
-The oracle appreciates variety, especially if the photo contains judgmental eye contact.
+The oracle appreciates variety, dramatic lighting, and strong judgmental eye contact.

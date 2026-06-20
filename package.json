@@ -3,11 +3,16 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "dev": "ng serve",
+    "start": "node dist/oracle-cat/server/server.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:oracle-cat": "node dist/oracle-cat/server/server.mjs"
+  },
+  "engines": {
+    "node": "22.x || 24.x",
+    "npm": "11.x"
   },
   "private": true,
   "packageManager": "npm@11.13.0",
