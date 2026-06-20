@@ -1,0 +1,89 @@
+<main
+  class="relative grid min-h-dvh place-items-center overflow-hidden bg-[radial-gradient(circle_at_50%_42%,rgba(238,206,102,0.16),transparent_34%),linear-gradient(145deg,#17110f_0%,#101418_48%,#211820_100%)] p-6 text-[#f7f0d8] after:absolute after:inset-0 after:z-[1] after:bg-[radial-gradient(circle_at_50%_46%,rgba(16,20,24,0),rgba(16,20,24,0.42)_62%),linear-gradient(145deg,rgba(23,17,15,0.34),rgba(16,20,24,0.56))] after:content-['']"
+  aria-labelledby="hero-title"
+>
+  <div
+    class="absolute -inset-[4%] z-0 scale-[1.02] bg-cover bg-center opacity-[0.68] [filter:grayscale(0.06)_saturate(1.08)_contrast(1.06)]"
+    aria-hidden="true"
+    [style.background-image]="catBackground()"
+  ></div>
+  <oc-language-toggle (languageChanged)="clearError()" />
+  <section
+    class="relative z-[2] grid min-h-[min(58vh,520px)] place-items-center text-center [text-shadow:0_18px_48px_rgba(0,0,0,0.62)]"
+    [ngClass]="answer() ? 'w-[min(100%,1040px)]' : 'w-[min(100%,960px)]'"
+  >
+    <div
+      class="col-start-1 row-start-1 w-full transition-[opacity,filter,transform] duration-700"
+      [ngClass]="
+        answer()
+          ? 'pointer-events-none -translate-y-[18px] scale-[0.97] opacity-0 blur-[18px]'
+          : 'translate-y-0 scale-100 opacity-100 blur-0'
+      "
+    >
+      <p
+        class="mb-[18px] text-[clamp(0.78rem,1vw,0.95rem)] font-bold uppercase tracking-[0.18em] text-[#ddb867]"
+      >
+        {{ text().kicker }}
+      </p>
+      <h1
+        id="hero-title"
+        class="m-0 text-balance text-[clamp(2.25rem,7.5vw,5.75rem)] font-black leading-[0.94] tracking-normal"
+      >
+        {{ text().title }}
+      </h1>
+      <form
+        class="mx-auto mt-[clamp(28px,4vw,48px)] flex w-[min(100%,720px)] gap-2.5 rounded-full border border-[#f7f0d8]/20 bg-[#101418]/55 p-2 backdrop-blur-[10px] max-[620px]:flex-col max-[620px]:rounded-[26px]"
+        (ngSubmit)="askOracle()"
+      >
+        <input
+          class="min-w-0 flex-1 border-0 bg-transparent px-[18px] text-[clamp(1rem,2vw,1.22rem)] font-bold text-[#f7f0d8] outline-none placeholder:text-[#f7f0d8]/60 disabled:opacity-70 max-[620px]:min-h-[52px] max-[620px]:text-center"
+          type="text"
+          name="question"
+          [(ngModel)]="question"
+          [placeholder]="text().inputPlaceholder"
+          autocomplete="off"
+          [disabled]="isAsking()"
+        />
+        <button
+          class="min-w-[104px] cursor-pointer rounded-full border border-[#f7f0d8]/40 bg-[#f7f0d8] px-[22px] py-3.5 text-[0.92rem] font-extrabold uppercase tracking-[0.08em] text-[#17110f] hover:bg-[#ddb867] disabled:cursor-wait disabled:opacity-70 max-[620px]:w-full"
+          type="submit"
+          [disabled]="isAsking()"
+        >
+          {{ isAsking() ? text().summoning : text().askButton }}
+        </button>
+      </form>
+    </div>
+
+    @if (error()) {
+      <p
+        class="mx-auto mt-7 w-[min(100%,680px)] text-balance text-[clamp(1.05rem,2.1vw,1.55rem)] font-bold leading-[1.35] text-[#ffb7a8]"
+      >
+        {{ error() }}
+      </p>
+    }
+
+    @if (answer()) {
+      <div
+        class="col-start-1 row-start-1 w-[min(100%,900px)] transition-[opacity,filter,transform] duration-700 ease-out"
+        [ngClass]="
+          revealAnswer()
+            ? 'translate-y-0 scale-100 opacity-100 blur-0'
+            : 'translate-y-6 scale-[0.98] opacity-0 blur-[24px]'
+        "
+      >
+        <p
+          class="mx-auto text-balance text-[clamp(2rem,5vw,5rem)] font-black leading-none text-[#f7f0d8]"
+        >
+          {{ answer() }}
+        </p>
+        <button
+          class="mt-9 cursor-pointer border-0 bg-transparent text-[0.82rem] font-extrabold uppercase tracking-[0.14em] text-[#f7f0d8]/80 hover:text-[#ddb867]"
+          type="button"
+          (click)="askAgain()"
+        >
+          {{ text().askAgain }}
+        </button>
+      </div>
+    }
+  </section>
+</main>

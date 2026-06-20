@@ -1,0 +1,33 @@
+<div
+  class="absolute left-1/2 top-6 z-[3] flex -translate-x-1/2 gap-1.5 rounded-full border border-[#f7f0d8]/20 bg-[#101418]/45 p-1.5 backdrop-blur-[10px] max-[620px]:top-4"
+  [attr.aria-label]="text().languageToggleLabel"
+>
+  <button
+    class="inline-flex h-[38px] min-w-[74px] cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-transparent text-[0.78rem] font-black tracking-[0.08em] text-[#f7f0d8]/75 hover:text-[#f7f0d8] max-[620px]:min-w-[60px]"
+    type="button"
+    data-testid="language-en"
+    [ngClass]="language() === 'en' ? 'bg-[#f7f0d8] text-[#17110f]' : ''"
+    [attr.aria-pressed]="language() === 'en'"
+    (click)="setLanguage('en')"
+  >
+    <ng-icon
+      class="h-[22px] w-[22px] overflow-hidden rounded-full shadow-[0_0_0_1px_rgba(247,240,216,0.24)]"
+      name="flagUs"
+    />
+    <span>EN</span>
+  </button>
+  <button
+    class="inline-flex h-[38px] min-w-[74px] cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-transparent text-[0.78rem] font-black tracking-[0.08em] text-[#f7f0d8]/75 hover:text-[#f7f0d8] max-[620px]:min-w-[60px]"
+    type="button"
+    data-testid="language-pt"
+    [ngClass]="language() === 'pt' ? 'bg-[#f7f0d8] text-[#17110f]' : ''"
+    [attr.aria-pressed]="language() === 'pt'"
+    (click)="setLanguage('pt')"
+  >
+    <ng-icon
+      class="h-[22px] w-[22px] overflow-hidden rounded-full shadow-[0_0_0_1px_rgba(247,240,216,0.24)]"
+      name="flagBr"
+    />
+    <span>PT</span>
+  </button>
+</div>

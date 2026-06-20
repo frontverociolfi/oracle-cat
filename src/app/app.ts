@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+
+import { OraclePage } from './features/oracle/oracle.page';
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
+  selector: 'oc-root',
+  imports: [OraclePage],
   templateUrl: './app.html',
-  styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('oracle-cat');
-}
+export class App {}
